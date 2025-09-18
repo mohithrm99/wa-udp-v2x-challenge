@@ -54,7 +54,7 @@ def verify_json_line(line: str) -> None:
 
 def main() -> int:
     try:
-        proc = subprocess.Popen(["python3", CAND], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        proc = subprocess.Popen(["python", CAND], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     except FileNotFoundError:
         print(f"ERROR: candidate not found at {CAND}", file=sys.stderr)
         return 2

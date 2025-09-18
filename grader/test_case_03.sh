@@ -39,7 +39,7 @@ bash "$HARNESS/launch.sh" &
 HPID=$!
 sleep 0.1
 
-if python3 "$GRADER/verify_and_run.py"; then
+if python "$GRADER/verify_and_run.py"; then
   echo "[PASS] test_case_03"
   kill "$HPID" 2>/dev/null || true; wait "$HPID" 2>/dev/null || true
   exit 0
