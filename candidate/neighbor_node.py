@@ -82,19 +82,10 @@ def main() -> int:
                 # Expect: {"id": "...", "pos":[x,y], "speed": float, "ts": int}
             # TODO: validate required keys/types defensively
             if msg["id"] is None: return -1
-            if msg["pos"] is None or msg["pos"] != [float, float]: return -2
-            if msg["speed"] is None or msg["speed"] != float: return -3
-            if msg["ts"] is None or msg["ts"] != int: return -4
-
-            nearest = nearest_neighbor(msg)
-            neighbor = {
-                "topic": "/v2x/neighbor_summary",
-                "count": msg["count"],
-                "nearest": nearest,
-                "ts": msg["ts"]
-            }
-
-            print(json.dumps(neighbor))
+            if msg["pos"] is None: return -2
+            if not isinstance(msg["pos"][0], float) or not isinstance(msg["pos"][0], float): return -2
+            if msg["speed"] is None or not isinstance(msg["speed"], float): return -3
+            if msg["ts"] is None or not isinstance(msg["ts"], int): return -4
             #   neighbors[msg["id"]] = {"pos": msg["pos"], "speed": msg["speed"], "last_ts": msg["ts"]}
             #hint: beacon handling, check each message and store in neighbors, try to cover edge cases
             # try to avoid changing anything in the main function outside this TODO block
