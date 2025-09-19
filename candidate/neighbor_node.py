@@ -41,22 +41,20 @@ def now_ms() -> int:
 
 
 def euclidean_dist_to_origin(pos) -> float:
-    if pos is not None and pos is [float, float]:  # validating that pos isn't None and is [x, y] of numbers
-        return math.sqrt(pos[0] ** 2 + pos[1] ** 2)  # using the pythagorean theorem to calculate euclidian distance
-    return 0.0
+    return math.sqrt(pos[0] ** 2 + pos[1] ** 2)  # using the pythagorean theorem to calculate euclidian distance
 
 
 def nearest_neighbor(neighbors: Dict[str, Dict[str, Any]]) -> Optional[Tuple[str, float]]:
     # neighbors[id] -> {"pos":[x,y], "speed": float, "last_ts": int}
-    id = ""
+    neighbor_id = ""
     dist = sys.float_info.max
     for neighbor in neighbors:
         if euclidean_dist_to_origin(neighbors[neighbor].get("pos")) < dist: # if the distance of this neighbor is
             # shorter, we replace id and dist with the id and dist of this neighbor
-            id = neighbors[neighbor].get("id")
             dist = euclidean_dist_to_origin(neighbors[neighbor].get("pos"))
+            neighbor_id = neighbor
 
-    nearest = (id, dist)
+    nearest = (neighbor_id, dist)
     return nearest
 
 
@@ -83,10 +81,11 @@ def main() -> int:
             # TODO: validate required keys/types defensively
             if msg["id"] is None: return -1
             if msg["pos"] is None: return -2
-            if not isinstance(msg["pos"][0], float) or not isinstance(msg["pos"][0], float): return -2
+            if not isinstance(msg["pos"][0], float) or not isinstance(msg["pos"][1], float): return -2
             if msg["speed"] is None or not isinstance(msg["speed"], float): return -3
             if msg["ts"] is None or not isinstance(msg["ts"], int): return -4
-            #   neighbors[msg["id"]] = {"pos": msg["pos"], "speed": msg["speed"], "last_ts": msg["ts"]}
+
+            neighbors[msg["id"]] = {"pos": msg["pos"], "speed": msg["speed"], "last_ts": msg["ts"]}
             #hint: beacon handling, check each message and store in neighbors, try to cover edge cases
             # try to avoid changing anything in the main function outside this TODO block
 
