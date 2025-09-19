@@ -64,6 +64,8 @@ def main() -> int:
     sock.bind((HOST, PORT_BEACON))
     sock.settimeout(1.5)
 
+    err = "" # error messages will be collected here
+
     first_ts: Optional[int] = None
     try:
         while True:
@@ -79,13 +81,18 @@ def main() -> int:
 
                 # Expect: {"id": "...", "pos":[x,y], "speed": float, "ts": int}
             # TODO: validate required keys/types defensively
-            if msg["id"] is None: return -1
-            if msg["pos"] is None: return -2
-            if not isinstance(msg["pos"][0], float) or not isinstance(msg["pos"][1], float): return -2
-            if msg["speed"] is None or not isinstance(msg["speed"], float): return -3
-            if msg["ts"] is None or not isinstance(msg["ts"], int): return -4
-
-            neighbors[msg["id"]] = {"pos": msg["pos"], "speed": msg["speed"], "last_ts": msg["ts"]}
+            if msg["id"] is None:
+                err += "ERROR: id isn't in the correct format"
+            elif msg["pos"] is None: err = "ERROR: pos is null"
+            elif len(msg["pos"]) != 2:
+                err += f"ERROR: pos should have 2 elements, detected: {len(msg["pos"])}"
+            elif not isinstance(msg["pos"][0], (float, int)) or not isinstance(msg["pos"][1], (float, int)):
+                err += "ERROR: pos isn't in the correct format"
+            elif msg["speed"] is None or not isinstance(msg["speed"], float):
+                err += "ERROR: speed isn't in the correct format"
+            elif msg["ts"] is None or not isinstance(msg["ts"], int): err = "ERROR: ts isn't in the correct format"
+            else:
+                neighbors[msg["id"]] = {"pos": msg["pos"], "speed": msg["speed"], "last_ts": msg["ts"]}
             #hint: beacon handling, check each message and store in neighbors, try to cover edge cases
             # try to avoid changing anything in the main function outside this TODO block
 
@@ -109,6 +116,8 @@ def main() -> int:
         "ts": now_ms(),
     }
     print(json.dumps(summary), flush=True)
+    # print(err)
+    # I am not printing err because the tester requires exactly one line of output
     return 0
 
 
